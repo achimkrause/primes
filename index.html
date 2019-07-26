@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Primes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+body{
+	font-family: "Roboto";
+	font-weight: 400;
+}
+
+#prime{
+	background-color: green;
+}
+
+#composite{
+	background-color: red;
+}
+
+#number{
+    font-size: 66pt;
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+}
+
+#button-box{
+	display: flex;
+	max-width: 300px;
+	flex-direction: horizontal;
+	margin: auto;
+}
+
+button{
+	width: 50%;
+	font-size: 20pt;
+	margin: 0px;
+	border-radius: 5px;
+}
+
+#result-box{
+	max-width: 300px;
+	margin: auto;
+	margin-top: 20px;
+	font-size: 20pt;
+	text-align: center;
+}
+
+
+@keyframes fadeOut{
+  0% {
+    opacity: 1;
+  }
+
+  30%{
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.fadeOut{
+   opacity: 0;
+   animation-name: fadeOut;
+   animation-duration: 4s;
+}
+
+
+</style>
+
+<script>
+var number;
+var factors;
+
+function init(){
+    chooseNumber();
+    let buttons = document.getElementsByTagName("button");
+    for(let i=0; i< buttons.length; i++){
+    	buttons[i].addEventListener("click",click);
+    }
+}
+
+function chooseNumber(){
+	let min = 1000;
+	let max = 3000;
+	let forbidden = [2,3,5];
+	let spokelength = 1;
+	let wheel = [];
+	let coprime = function(i){
+        for(let j=0; j<forbidden.length;j++){
+        		if(i%forbidden[j] === 0){
+        			return false;
+        		}
+        	}
+        return true;
+    }
+
+	for(let i=0; i < forbidden.length; i++){
+		spokelength = spokelength * forbidden[i];
+	}
+    for(let i=1; i < spokelength; i++){
+        if(coprime(i)){
+        	wheel.push(i);
+        }
+    }
+
+    //only accurate up to multiples of wheel length...
+    revolutionsMin = min/spokelength;
+    revolutionsMax = max/spokelength; 
+    revolutions    = Math.floor(Math.random()*(revolutionsMax - revolutionsMin) + revolutionsMin);
+    spoke          = Math.floor(Math.random()*wheel.length);
+	number = revolutions*spokelength + wheel[spoke];
+	factors = factor(number);
+	document.getElementById("number").innerHTML = number;
+}
+
+function factor(n){
+   let factors = [];
+   let num = n;
+   let i = 2;
+   while(i*i<num){
+   	  if(num%i===0){
+   	  	factors.push(i);
+   	  	num = num/i;
+   	  }
+   	  else{
+   	  	i=i+1;
+   	  }
+   }
+   if(num!==1){
+   	factors.push(num);
+   }
+   return factors;
+}
+
+function setResult(str){
+    let box = document.getElementById("result-box");
+    let result = document.createElement("div");
+    result.innerHTML = str;
+    result.classList.add("fadeOut");
+
+    while(box.firstChild){
+      box.removeChild(box.firstChild);
+    }
+    box.appendChild(result);
+}
+
+function click(e){
+   if(e.target.id==="composite"){
+   	  if(factors.length===1){
+          setResult("Wrong! " + number + " is prime.");
+   	  }
+   	  else{
+   	  	 setResult("Correct! "+number + " = " + factors.join('*') + ".");
+   	  }
+   }
+   else if(e.target.id==="prime"){
+   	  if(factors.length===1){
+          setResult("Correct! "+number + " is prime.");
+   	  }
+   	  else{
+   	  	 setResult("Wrong! "+number + " factors as " + factors.join('*') + ".");
+   	  }
+   }
+   chooseNumber();
+}
+
+</script>
+</head>
+
+<body onload="init()">
+
+<div id="number">
+</div>
+
+
+<div id="button-box">
+<button id="prime">
+Prime!
+</button>
+<button id="composite">
+Composite!
+</button>
+</div>
+
+<div id="result-box">
+</div>
+</body>
+</html>
